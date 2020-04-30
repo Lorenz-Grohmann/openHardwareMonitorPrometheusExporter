@@ -7,8 +7,16 @@ class OHM_Exporter():
     def __init__(self):
         self.host = socket.gethostname()
         self.wmi_connection = wmi.WMI(namespace="root\\OpenHardwareMonitor")
+        # Wait for Open Hardware Monitor
+        while True:
+            if len(self.wmi_connection.Hardware()) > 0:
+                break
+            time.sleep(1)
+        # Wait for Open Hardware Monitor to collect resources
+        time.sleep(5)
+        # Start Exporter
+        start_http_server(9398)
         self.setupEndpoints()
-        start_http_server(8000)
 
     def setupEndpoints(self):
         self.cpu_identifier = {}
